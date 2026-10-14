@@ -186,6 +186,8 @@ def _vertex_extract_fields(raw_text: str) -> dict:
             "make": {"type": "string", "nullable": True},
             "model": {"type": "string", "nullable": True},
             "mileage": {"type": "integer", "nullable": True},
+            "transmission": {"type": "string", "nullable": True},
+            "title_status": {"type": "string", "nullable": True},
         },
         "required": ["price", "year", "make", "model", "mileage"]
     }
@@ -196,7 +198,9 @@ def _vertex_extract_fields(raw_text: str) -> dict:
         "Return a strict JSON object that conforms to the provided schema. "
         "If a value is not present, use null. "
         "Rules: integers for price/year/mileage; price in USD; mileage in miles; "
-        "do not infer values not explicitly present; do not add extra keys."
+        "do not infer values not explicitly present; do not add extra keys. " 
+        "transmission must be one of: automatic, manual, other. "
+        "title_status must be one of: clean, rebuilt, salvage, lien, missing, other."
     )
 
     # FIX: Combine instruction and text into one prompt string (SDK compatibility)
@@ -346,6 +350,8 @@ def llm_extract_http(request: Request):
                     "make": parsed.get("make"),
                     "model": parsed.get("model"),
                     "mileage": parsed.get("mileage"),
+                    "transmission": parsed.get("transmission"),
+                    "title_status": parsed.get("title_status"),
                     "llm_provider": "vertex",
                     "llm_model": LLM_MODEL,
                     "llm_ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
